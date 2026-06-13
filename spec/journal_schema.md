@@ -3,6 +3,9 @@
 Spécification publique. Tout journal conforme émet ces 12 champs. Le schéma est une **contrainte de
 forme** : un journal qui naît sans ces champs paie un retrofit en cohérence.
 
+> **Statut — v0 (niveau 12 champs).** Ce schéma précède la section « racines de la preuve d'outcome » du
+> schéma canonique ; sa synchronisation est **différée à une décision dédiée**.
+
 ## Champs (12)
 | # | Champ | Type | Description |
 |---|---|---|---|
