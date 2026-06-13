@@ -1,0 +1,79 @@
+{
+  "schema": "alia.conformity/0",
+  "algo": "entry_hash = sha256( json_canonical(entry_sans_entry_hash) ), json_canonical = sort_keys=True, separators=(',',':')",
+  "valid": [
+    {
+      "description": "racine correcte, genese (prev_hash = 64 zeros)",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000a1",
+        "value": 42,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "claimed_entry_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c8"
+    },
+    {
+      "description": "racine correcte, chainee sur la precedente (prev_hash = hash de e1)",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000a1",
+        "value": 37,
+        "prev_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c8"
+      },
+      "claimed_entry_hash": "98c93133c66d1448229ce4c6a5c0d4a95c6f88dc017d31e349f297e5f3ebe71e",
+      "expected_prev_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c8"
+    },
+    {
+      "description": "racine correcte, autre sujet, genese",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000b2",
+        "value": 88,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "claimed_entry_hash": "d0674cf9fe3d496fda3035a4b099cd864de31742c1169c4b2c572c9c2bbf470b"
+    }
+  ],
+  "invalid": [
+    {
+      "description": "racine fausse (un caractere modifie)",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000a1",
+        "value": 42,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "claimed_entry_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c0",
+      "reason": "hash != sha256(canonical)"
+    },
+    {
+      "description": "serialisation non-canonique (cles non triees) revendiquee comme racine",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000a1",
+        "value": 42,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "claimed_entry_hash": "694f641cec6fd86859bce4abe11a0c221443e57bc58de412d1321fe0393536d2",
+      "reason": "canonicalisation requise (sort_keys + separators)"
+    },
+    {
+      "description": "chaine rompue : prev_hash ne pointe pas sur la racine precedente",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000a1",
+        "value": 37,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "claimed_entry_hash": "b20df06f664abdb696c986846294680d36376625471d6c0dadeebdc8f517625f",
+      "expected_prev_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c8",
+      "reason": "prev_hash != entry_hash precedent"
+    }
+  ]
+}
