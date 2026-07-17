@@ -1,6 +1,6 @@
 {
   "schema": "alia.conformity/0",
-  "algo": "entry_hash = sha256( json_canonical(entry_sans_entry_hash) ), json_canonical = sort_keys=True, separators=(',',':')",
+  "algo": "entry_hash = sha256( json_canonical(entry au moment du hachage : entry_hash EXCLU, anchor=null) ), json_canonical = sort_keys=True, separators=(',',':')",
   "valid": [
     {
       "description": "racine correcte, genese (prev_hash = 64 zeros)",
@@ -35,6 +35,23 @@
         "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000"
       },
       "claimed_entry_hash": "d0674cf9fe3d496fda3035a4b099cd864de31742c1169c4b2c572c9c2bbf470b"
+    },
+    {
+      "description": "racine correcte APRES ancrage : l'entree porte l'anchor reel ; la racine se recalcule en remettant anchor=null (regle §1)",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000c3",
+        "value": 55,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "anchor": {
+          "chain": "base-mainnet",
+          "tx_hash": "0xabababababababababababababababababababababababababababababababab",
+          "explorer": "https://basescan.org/tx/0xabababababababababababababababababababababababababababababababab"
+        },
+        "entry_hash": "e47bbe063971412c1b264a92ae0b22cd7d8ad185accdaea8045f5d633c627def"
+      },
+      "claimed_entry_hash": "e47bbe063971412c1b264a92ae0b22cd7d8ad185accdaea8045f5d633c627def"
     }
   ],
   "invalid": [
@@ -74,6 +91,23 @@
       "claimed_entry_hash": "b20df06f664abdb696c986846294680d36376625471d6c0dadeebdc8f517625f",
       "expected_prev_hash": "1ec85ece6c6b479d689e08808c02f0c775ec7ad2d91e4909c31b4efbfad882c8",
       "reason": "prev_hash != entry_hash precedent"
+    },
+    {
+      "description": "NON conforme : racine calculee en INCLUANT l'anchor reel (oubli de la normalisation anchor=null, l'ancien bug)",
+      "entry": {
+        "schema": "alia.journal/0",
+        "network": "base-mainnet",
+        "subject": "0x00000000000000000000000000000000000000c3",
+        "value": 55,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "anchor": {
+          "chain": "base-mainnet",
+          "tx_hash": "0xabababababababababababababababababababababababababababababababab",
+          "explorer": "https://basescan.org/tx/0xabababababababababababababababababababababababababababababababab"
+        },
+        "entry_hash": "e47bbe063971412c1b264a92ae0b22cd7d8ad185accdaea8045f5d633c627def"
+      },
+      "claimed_entry_hash": "683cf4b2f63364c870a8ae2e8cfe9e5d2ddc9062b11ba11301864ad98e4e7246"
     }
   ]
 }

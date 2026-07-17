@@ -14,8 +14,12 @@ import sys
 
 
 def entry_root(entry):
-    """Racine canonique d'une entrée (champ entry_hash exclu) : sha256(json trié, compact, UTF-8)."""
-    e = {k: v for k, v in entry.items() if k != "entry_hash"}
+    """Racine canonique d'une entrée : sha256(json trié, compact, UTF-8) sur l'entrée AU MOMENT DU HACHAGE.
+    Deux champs sont normalisés parce qu'ils n'existent pas encore quand la racine est calculée :
+      · `entry_hash` est EXCLU (c'est le résultat lui-même) ;
+      · `anchor` vaut `null` — la preuve d'ancrage (tx on-chain) est ajoutée APRÈS le calcul de la racine ;
+        la racine ne peut donc pas en dépendre. Voir anchoring_format.md §1."""
+    e = {k: (None if k == "anchor" else v) for k, v in entry.items() if k != "entry_hash"}
     return hashlib.sha256(json.dumps(e, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 

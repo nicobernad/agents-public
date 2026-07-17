@@ -15,10 +15,19 @@ requise : posséder un `subjectId`, c'est le calculer. Une identité **sans jour
 ## 1. Racine (entry_hash)
 Chaque entrée de journal est un objet JSON. Sa **racine** est :
 
-    entry_hash = sha256( json_canonical( entrée_sans_le_champ_entry_hash ) )
+    entry_hash = sha256( json_canonical( entrée_au_moment_du_hachage ) )
 
 où `json_canonical` = sérialisation JSON **déterministe** : clés triées (`sort_keys=True`) et séparateurs
 compacts (`(",", ":")`, sans espaces), encodage UTF-8. Résultat = 64 hexadécimaux (sha256).
+
+**« au moment du hachage » = deux champs normalisés**, parce qu'ils n'existent pas encore quand la racine
+est calculée :
+- le champ **`entry_hash`** est **exclu** (c'est le résultat lui-même) ;
+- le champ **`anchor`** vaut **`null`** : la preuve d'ancrage (la transaction on-chain) est **ajoutée APRÈS**
+  le calcul de la racine — la racine ne peut donc pas en dépendre. L'entrée stockée porte l'`anchor` réel,
+  mais pour **recalculer** la racine on remet `anchor = null`. *(Sans cette règle, aucune entrée ancrée ne
+  se recompute — c'est la normalisation qui rend la vérification « sans confiance » vraie sur les entrées
+  ancrées comme sur les autres.)*
 
 ## 2. Chaînage (prev_hash)
 Chaque entrée porte `prev_hash` = la racine `entry_hash` de l'entrée précédente. La genèse a `prev_hash`
@@ -34,7 +43,7 @@ transaction. La couche neutre est **lecteur-vérifieur, pas guichet**.
 
 ## 4. Procédure de vérification (pas-à-pas, recalculable)
 Étant donné une entrée de journal et une transaction Base :
-1. Retirer le champ `entry_hash` de l'entrée.
+1. Retirer le champ `entry_hash` de l'entrée **et remettre `anchor = null`** (état au moment du hachage, §1).
 2. Sérialiser en JSON canonique (clés triées, séparateurs compacts, UTF-8).
 3. Calculer `sha256` → comparer au `entry_hash` revendiqué. **Doit être égal.**
 4. Vérifier que cette racine `bytes32` apparaît dans la transaction Base citée (événement `Anchored.entryHash`, ou calldata après `ALIA-FQR1:`).
